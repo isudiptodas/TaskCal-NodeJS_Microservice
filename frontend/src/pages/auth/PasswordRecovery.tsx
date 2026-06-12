@@ -1,10 +1,12 @@
+import axios from 'axios'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getErrorMessage, requestPasswordOtp, resetPassword, verifyPasswordOtp } from '../../api'
+import { API_BASE_URL, getErrorMessage } from '../../api'
 import ErrorToast from '../../components/ErrorToast'
 import { passwordMessage, requiredMessage } from '../../validation'
 
 type Step = 'email' | 'otp' | 'reset'
+const passwordApiUrl = API_BASE_URL ? API_BASE_URL : 'http://localhost:8000'
 
 function PasswordRecovery() {
   const navigate = useNavigate()
@@ -31,7 +33,7 @@ function PasswordRecovery() {
 
     try {
       const generatedOtp = String(Math.floor(100000 + Math.random() * 900000))
-      await requestPasswordOtp({ email, otp: generatedOtp })
+      await axios.post(`${passwordApiUrl}/api/password-recovery/request-otp`, { email, otp: generatedOtp }, { withCredentials: true })
       setStep('otp')
     } catch (caught) {
       setError(getErrorMessage(caught))
@@ -57,7 +59,7 @@ function PasswordRecovery() {
     setLoading(true)
 
     try {
-      await verifyPasswordOtp({ email, otp })
+      await axios.post(`${passwordApiUrl}/api/password-recovery/verify-otp`, { email, otp }, { withCredentials: true })
       setStep('reset')
     } catch (caught) {
       setError(getErrorMessage(caught))
@@ -85,7 +87,7 @@ function PasswordRecovery() {
     setLoading(true)
 
     try {
-      await resetPassword({ email, otp, password })
+      await axios.post(`${passwordApiUrl}/api/password-recovery/reset-password`, { email, otp, password }, { withCredentials: true })
       navigate('/auth/login', { replace: true })
     } catch (caught) {
       setError(getErrorMessage(caught))

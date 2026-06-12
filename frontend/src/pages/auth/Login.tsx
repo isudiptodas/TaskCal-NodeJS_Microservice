@@ -1,8 +1,11 @@
+import axios from 'axios'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getErrorMessage, loginUser } from '../../api'
+import { API_BASE_URL, getErrorMessage } from '../../api'
 import ErrorToast from '../../components/ErrorToast'
 import { requiredMessage } from '../../validation'
+
+const authApiUrl = API_BASE_URL ? API_BASE_URL : 'http://localhost:5000'
 
 function Login() {
   const navigate = useNavigate()
@@ -25,7 +28,7 @@ function Login() {
     setLoading(true)
 
     try {
-      await loginUser({ email, password })
+      await axios.post(`${authApiUrl}/api/auth/login`, { email, password }, { withCredentials: true })
       navigate('/home', { replace: true })
     } catch (caught) {
       setError(getErrorMessage(caught))

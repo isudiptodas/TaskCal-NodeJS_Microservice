@@ -1,21 +1,20 @@
+import axios from 'axios'
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { FaCheck, FaRegCircleUser } from 'react-icons/fa6'
+import { MdKeyboardDoubleArrowRight } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import {
-  createTask,
-  deleteTask,
+  API_BASE_URL,
   getErrorMessage,
-  getCurrentUser,
-  getTasks,
-  logoutUser,
   type Task,
   type TaskPriority,
-  updateTask,
   type User,
+  toTask,
+  toUser,
+  unwrap,
 } from '../api'
 import ErrorToast from '../components/ErrorToast'
 import { pastDateMessage, requiredMessage } from '../validation'
-import { MdKeyboardDoubleArrowRight } from "react-icons/md";
 
 type CalendarDay = {
   key: string
@@ -40,12 +39,47 @@ const monthNames = [
 
 const weekDays = ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat']
 const priorities: TaskPriority[] = ['High', 'Medium', 'Low', 'Very low']
+const authApiUrl = API_BASE_URL ? API_BASE_URL : 'http://localhost:5000'
+const taskApiUrl = API_BASE_URL ? API_BASE_URL : 'http://localhost:7000'
 
 const emptyForm: Omit<Task, 'id'> = {
   title: '',
   description: '',
   priority: 'Low',
   date: toDateInputValue(new Date()),
+}
+
+async function getCurrentUser() {
+  const { data } = await axios.get(`${authApiUrl}/api/auth/me`, { withCredentials: true })
+
+  return toUser(data)
+}
+
+async function logoutUser() {
+  await axios.post(`${authApiUrl}/api/auth/logout`, null, { withCredentials: true })
+}
+
+async function getTasks() {
+  const { data } = await axios.get(`${taskApiUrl}/api/task`, { withCredentials: true })
+  const tasks = unwrap(data, 'tasks')
+
+  return Array.isArray(tasks) ? tasks.map((task) => toTask(task)) : []
+}
+
+async function createTask(payload: Omit<Task, 'id'>) {
+  const { data } = await axios.post(`${taskApiUrl}/api/task`, payload, { withCredentials: true })
+
+  return toTask(unwrap(data, 'task'))
+}
+
+async function updateTask(id: string, payload: Omit<Task, 'id'>) {
+  const { data } = await axios.put(`${taskApiUrl}/api/task/${id}`, payload, { withCredentials: true })
+
+  return toTask(unwrap(data, 'task'))
+}
+
+async function deleteTask(id: string) {
+  await axios.delete(`${taskApiUrl}/api/task/${id}`, { withCredentials: true })
 }
 
 function Home() {

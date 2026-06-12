@@ -1,8 +1,11 @@
+import axios from 'axios'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getErrorMessage, registerUser } from '../../api'
+import { API_BASE_URL, getErrorMessage } from '../../api'
 import ErrorToast from '../../components/ErrorToast'
 import { passwordMessage, requiredMessage } from '../../validation'
+
+const authApiUrl = API_BASE_URL ? API_BASE_URL : 'http://localhost:5000'
 
 function Register() {
   const navigate = useNavigate()
@@ -26,7 +29,7 @@ function Register() {
     setLoading(true)
 
     try {
-      await registerUser({ name, email, password })
+      await axios.post(`${authApiUrl}/api/auth/register`, { name, email, password }, { withCredentials: true })
       navigate('/auth/login', { replace: true })
     } catch (caught) {
       setError(getErrorMessage(caught))
