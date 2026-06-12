@@ -79,9 +79,9 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12)
     const user = await User.create({ name, email, password: hashedPassword })
 
-    if (process.env.NOTIFICATION_SERVICE_URL) {
+    if (process.env.NOTIFICATION_SERVICE) {
       try {
-        await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/api/notification/welcome`, {
+        await axios.post(`${process.env.NOTIFICATION_SERVICE}/api/notification/welcome`, {
           name: user.name,
           email: user.email,
         })
