@@ -1,3 +1,5 @@
+![diagram](https://github.com/isudiptodas/TaskCal-NodeJS_Microservice/blob/main/diagram.png)
+
 # TaskCal Microservices
 
 TaskCal is a calendar-first task planner built as small Node.js microservices with a React + TypeScript frontend.
