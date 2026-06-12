@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification-container
+          image: <container-name>
+          ports:
+            - containerPort: 6000
+          envFrom:
+            - secretRef:
+                name: taskcal-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 6000
