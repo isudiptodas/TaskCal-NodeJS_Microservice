@@ -21,7 +21,7 @@ function startReminderJob() {
 
       for (const task of tasks) {
         try {
-          await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/api/notification/task-reminder`, {
+          await axios.post(`${process.env.NOTIFICATION_SERVICE}/api/notification/task-reminder`, {
             userId: task.userId,
             email: task.userEmail,
             title: task.title,

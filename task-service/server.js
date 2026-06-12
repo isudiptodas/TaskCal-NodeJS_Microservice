@@ -12,7 +12,7 @@ const port = process.env.PORT || 7000
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin:  process.env.CLIENT_URL ? process.env.CLIENT_URL : "*",
     credentials: true,
   }),
 )
@@ -24,7 +24,7 @@ app.use('/api/task', requireAuth, taskRoutes)
 
 async function startServer() {
   try {
-    if (process.env.NOTIFICATION_SERVICE_URL) startReminderJob()
+    if (process.env.NOTIFICATION_SERVICE) startReminderJob()
     app.listen(port, () => console.log(`task-service listening on ${port}`))
   } catch (error) {
     console.error(error)
