@@ -25,9 +25,9 @@ router.post('/request-otp', async (req, res) => {
 
     await redis.set(key(email), otp, { EX: ttl })
 
-    if (process.env.NOTIFICATION_SERVICE_URL) {
+    if (process.env.NOTIFICATION_SERVICE) {
       try {
-        await axios.post(`${process.env.NOTIFICATION_SERVICE_URL}/api/notification/password-otp`, {
+        await axios.post(`${process.env.NOTIFICATION_SERVICE}/api/notification/password-otp`, {
           name: user.name,
           email: user.email,
           otp,
